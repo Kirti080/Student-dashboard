@@ -1,0 +1,163 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource/inter";
+
+body {
+  font-family: "Inter", sans-serif;
+  min-width: 320px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Light mode tokens ── */
+:root {
+  --bg-base: #eef2ff;
+  --bg-card: #ffffff;
+  --text-base: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+}
+
+/* ── Dark mode tokens ── */
+.dark {
+  --bg-base: #0a0f1e;
+  --bg-card: #111827;
+  --text-base: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: #1e293b;
+}
+
+/* ── Entrance Animations ── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(59,130,246,0); }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Staggered delays for card grids */
+.delay-0   { animation-delay: 0ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-250 { animation-delay: 250ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-350 { animation-delay: 350ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* ── Glassmorphism ── */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dark .glass {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Gradient Cards ── */
+.grad-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+.grad-green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+.grad-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+.grad-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+.grad-rose {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+}
+
+/* ── Shimmer text ── */
+.shimmer-text {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── Progress bar gradient ── */
+.progress-gradient [role="progressbar"] > div,
+.progress-gradient [data-slot="progress-indicator"] {
+  background: linear-gradient(90deg, #3b82f6, #6366f1) !important;
+}
+
+/* ── Glow on hover for stat cards ── */
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -12px rgba(59, 130, 246, 0.25);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Assignment status accent bar ── */
+.accent-pending {
+  border-left: 4px solid #f97316;
+}
+.accent-submitted {
+  border-left: 4px solid #10b981;
+}
+
+/* ── Dark mode base overrides ── */
+.dark .min-h-screen {
+  background: linear-gradient(135deg, #0a0f1e 0%, #0f172a 40%, #1a1040 100%) !important;
+}
+
+.dark .glass {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* Tooltip */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}
