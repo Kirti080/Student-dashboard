@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AdminDatePicker from "@/components/admin/AdminDatePicker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -821,6 +822,21 @@ export default function AdminResourcePage({
                                     <option key={option}>{option}</option>
                                   ))}
                           </select>
+                        ) : field.type === "date" ? (
+                          <AdminDatePicker
+                            value={
+                              form[field.name] === undefined
+                                ? ""
+                                : String(form[field.name])
+                            }
+                            label={field.label.toLowerCase()}
+                            onChange={(value) =>
+                              setForm((current) => ({
+                                ...current,
+                                [field.name]: value,
+                              }))
+                            }
+                          />
                         ) : (
                           <Input
                             required={
