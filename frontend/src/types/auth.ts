@@ -7,6 +7,8 @@ export type AuthUser = {
   semester?: string;
   rollNo?: string;
   profileImage?: string;
+  role?: "student" | "admin";
+  isActive?: boolean;
 };
 
 export type LoginPayload = {

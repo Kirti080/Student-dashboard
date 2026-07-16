@@ -8,19 +8,100 @@ import Assignments from "./pages/Assignments";
 import Results from "./pages/Results";
 import Attendance from "./pages/Attendance";
 import Settings from "./pages/Settings";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { AdminRoute, StudentRoute } from "./components/RoleRoutes";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminResourcePage from "./pages/admin/AdminResourcePage";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Sign />} />
       <Route path="/Create" element={<Create />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
-      <Route path="/assignments" element={<ProtectedRoute><Assignments /></ProtectedRoute>} />
-      <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
-      <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route
+        path="/dashboard"
+        element={
+          <StudentRoute>
+            <Dashboard />
+          </StudentRoute>
+        }
+      />
+      <Route
+        path="/courses"
+        element={
+          <StudentRoute>
+            <Courses />
+          </StudentRoute>
+        }
+      />
+      <Route
+        path="/assignments"
+        element={
+          <StudentRoute>
+            <Assignments />
+          </StudentRoute>
+        }
+      />
+      <Route
+        path="/results"
+        element={
+          <StudentRoute>
+            <Results />
+          </StudentRoute>
+        }
+      />
+      <Route
+        path="/attendance"
+        element={
+          <StudentRoute>
+            <Attendance />
+          </StudentRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <StudentRoute>
+            <Settings />
+          </StudentRoute>
+        }
+      />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+      {(
+        [
+          "students",
+          "courses",
+          "assignments",
+          "progress",
+          "attendance",
+          "results",
+        ] as const
+      ).map((resource) => (
+        <Route
+          key={resource}
+          path={`/admin/${resource}`}
+          element={
+            <AdminRoute>
+              <AdminResourcePage resource={resource} />
+            </AdminRoute>
+          }
+        />
+      ))}
+      <Route
+        path="/admin/settings"
+        element={
+          <AdminRoute>
+            <AdminSettings />
+          </AdminRoute>
+        }
+      />
     </Routes>
   );
 }

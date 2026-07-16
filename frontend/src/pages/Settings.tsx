@@ -7,28 +7,65 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
-  User, Bell, Shield, Palette, Moon, Sun, Monitor,
-  Save, CheckCircle, Mail, Phone, BookOpen, Eye, EyeOff, Sparkles,
-  Pencil, X,
+  User,
+  Bell,
+  Shield,
+  Palette,
+  Moon,
+  Sun,
+  Monitor,
+  Save,
+  CheckCircle,
+  Mail,
+  Phone,
+  BookOpen,
+  Eye,
+  EyeOff,
+  Sparkles,
+  Pencil,
+  X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/context/ThemeContext";
-import { changePassword, getProfile, updateProfile, type Profile } from "@/services/profileService";
+import {
+  changePassword,
+  getProfile,
+  updateProfile,
+  type Profile,
+} from "@/services/profileService";
 import getAssetURL from "@/utils/getAssetURL";
 
 const tabs = [
-  { id: "profile",      label: "Profile",      icon: User,    color: "text-blue-500" },
-  { id: "notifications", label: "Notifications", icon: Bell,   color: "text-purple-500" },
-  { id: "security",    label: "Security",      icon: Shield,  color: "text-green-500" },
-  { id: "appearance",  label: "Appearance",    icon: Palette, color: "text-orange-500" },
+  { id: "profile", label: "Profile", icon: User, color: "text-blue-500" },
+  {
+    id: "notifications",
+    label: "Notifications",
+    icon: Bell,
+    color: "text-purple-500",
+  },
+  { id: "security", label: "Security", icon: Shield, color: "text-green-500" },
+  {
+    id: "appearance",
+    label: "Appearance",
+    icon: Palette,
+    color: "text-orange-500",
+  },
 ];
 
-function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+function Toggle({
+  enabled,
+  onChange,
+}: {
+  enabled: boolean;
+  onChange: (v: boolean) => void;
+}) {
   return (
     <button
       onClick={() => onChange(!enabled)}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 focus:outline-none shadow-inner ${
-        enabled ? "bg-gradient-to-r from-blue-500 to-indigo-600" : "bg-slate-200 dark:bg-slate-600"
+        enabled
+          ? "bg-gradient-to-r from-blue-500 to-indigo-600"
+          : "bg-slate-200 dark:bg-slate-600"
       }`}
     >
       <span
@@ -63,9 +100,9 @@ function Settings() {
     name: "Kirti Verma",
     email: "kirti.verma@college.edu",
     phone: "+91 98765 43210",
-    program: "B.Tech CSE",
-    semester: "6th Semester",
-    rollNo: "22CS001",
+    program: "",
+    semester: "",
+    rollNo: "",
   });
   const [profileDraft, setProfileDraft] = useState(profile);
 
@@ -95,7 +132,9 @@ function Settings() {
         setProfile(data);
         setProfileDraft(data);
       } catch (error) {
-        setProfileError(error instanceof Error ? error.message : "Unable to load profile");
+        setProfileError(
+          error instanceof Error ? error.message : "Unable to load profile",
+        );
       } finally {
         setProfileLoading(false);
       }
@@ -132,13 +171,17 @@ function Settings() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (error) {
-      setProfileError(error instanceof Error ? error.message : "Unable to update profile");
+      setProfileError(
+        error instanceof Error ? error.message : "Unable to update profile",
+      );
     } finally {
       setProfileSaving(false);
     }
   };
 
-  const handleChangePassword = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleChangePassword = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
     setPasswordError("");
     setPasswordMessage("");
@@ -154,13 +197,17 @@ function Settings() {
         currentPassword: passwords.currentPassword,
         newPassword: passwords.newPassword,
       });
-      setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setPasswords({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
       setPasswordMessage(data.message);
     } catch (error) {
       setPasswordError(
         axios.isAxiosError<{ message?: string }>(error)
           ? error.response?.data?.message || "Unable to change password"
-          : "Unable to change password"
+          : "Unable to change password",
       );
     } finally {
       setPasswordSaving(false);
@@ -174,7 +221,9 @@ function Settings() {
         <div className="relative">
           <Avatar className="h-20 w-20 ring-4 ring-white dark:ring-slate-700 shadow-lg">
             <AvatarImage src={profileImageURL} />
-            <AvatarFallback className="bg-blue-100 text-blue-700 text-xl font-black dark:bg-blue-900 dark:text-blue-300">{profileInitials}</AvatarFallback>
+            <AvatarFallback className="bg-blue-100 text-blue-700 text-xl font-black dark:bg-blue-900 dark:text-blue-300">
+              {profileInitials}
+            </AvatarFallback>
           </Avatar>
           <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-green-400 border-2 border-white dark:border-slate-700 shadow" />
         </div>
@@ -182,12 +231,16 @@ function Settings() {
           <p className="text-lg font-black text-slate-900 dark:text-slate-100">
             {isEditingProfile ? profileDraft.name : profile.name}
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{profile.program} · {profile.semester}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {profile.program} · {profile.semester}
+          </p>
           <div className="flex gap-2 mt-2">
             <Badge className="bg-blue-600 text-white border-0 text-xs">
               Roll No: {isEditingProfile ? profileDraft.rollNo : profile.rollNo}
             </Badge>
-            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 border-0 text-xs">● Online</Badge>
+            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 border-0 text-xs">
+              ● Online
+            </Badge>
           </div>
         </div>
         <div className="min-w-0">
@@ -195,13 +248,16 @@ function Settings() {
             {isEditingProfile ? profileDraft.name : profile.name}
           </p>
           <p className="truncate text-sm text-slate-500 dark:text-slate-400">
-            {isEditingProfile ? profileDraft.program : profile.program} - {isEditingProfile ? profileDraft.semester : profile.semester}
+            {isEditingProfile ? profileDraft.program : profile.program} -{" "}
+            {isEditingProfile ? profileDraft.semester : profile.semester}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             <Badge className="bg-blue-600 text-white border-0 text-xs">
               Roll No: {isEditingProfile ? profileDraft.rollNo : profile.rollNo}
             </Badge>
-            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 border-0 text-xs">Online</Badge>
+            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 border-0 text-xs">
+              Online
+            </Badge>
           </div>
         </div>
       </div>
@@ -220,16 +276,20 @@ function Settings() {
           { label: "Program", field: "program", icon: BookOpen, type: "text" },
         ].map((f) => (
           <div key={f.field} className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">{f.label}</label>
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              {f.label}
+            </label>
             <div className="relative">
               <f.icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 type={f.type}
                 value={profileDraft[f.field as keyof typeof profileDraft]}
-                onChange={(e) => setProfileDraft((p) => ({ ...p, [f.field]: e.target.value }))}
-                disabled={!isEditingProfile}
+                onChange={(e) =>
+                  setProfileDraft((p) => ({ ...p, [f.field]: e.target.value }))
+                }
+                disabled={!isEditingProfile || f.field === "program"}
                 className={`pl-10 h-11 rounded-xl border-slate-200 dark:border-slate-700 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 transition ${
-                  isEditingProfile
+                  isEditingProfile && f.field !== "program"
                     ? "bg-white dark:bg-slate-900"
                     : "bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                 }`}
@@ -245,16 +305,13 @@ function Settings() {
           { label: "Roll Number", field: "rollNo" },
         ].map((f) => (
           <div key={f.label} className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">{f.label}</label>
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              {f.label}
+            </label>
             <Input
               value={profileDraft[f.field as keyof typeof profileDraft]}
-              onChange={(e) => setProfileDraft((p) => ({ ...p, [f.field]: e.target.value }))}
-              disabled={!isEditingProfile}
-              className={`h-11 rounded-xl border-slate-200 dark:border-slate-700 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 transition ${
-                isEditingProfile
-                  ? "bg-white dark:bg-slate-900"
-                  : "bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-              }`}
+              disabled
+              className="h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-600 transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
             />
           </div>
         ))}
@@ -271,11 +328,36 @@ function Settings() {
   const renderNotifications = () => (
     <div className="space-y-3">
       {[
-        { key: "assignmentDue",    label: "Assignment Due Alerts",  desc: "Get reminded before assignment deadlines",   color: "bg-orange-500" },
-        { key: "resultPublished",  label: "Result Published",       desc: "Notify when semester results are out",       color: "bg-blue-500" },
-        { key: "attendanceAlert",  label: "Attendance Warning",     desc: "Alert when attendance drops below 75%",      color: "bg-red-500" },
-        { key: "examSchedule",     label: "Exam Schedule",          desc: "Updates on upcoming exam timetables",        color: "bg-purple-500" },
-        { key: "newsletter",       label: "College Newsletter",     desc: "Monthly college updates and events",         color: "bg-green-500" },
+        {
+          key: "assignmentDue",
+          label: "Assignment Due Alerts",
+          desc: "Get reminded before assignment deadlines",
+          color: "bg-orange-500",
+        },
+        {
+          key: "resultPublished",
+          label: "Result Published",
+          desc: "Notify when semester results are out",
+          color: "bg-blue-500",
+        },
+        {
+          key: "attendanceAlert",
+          label: "Attendance Warning",
+          desc: "Alert when attendance drops below 75%",
+          color: "bg-red-500",
+        },
+        {
+          key: "examSchedule",
+          label: "Exam Schedule",
+          desc: "Updates on upcoming exam timetables",
+          color: "bg-purple-500",
+        },
+        {
+          key: "newsletter",
+          label: "College Newsletter",
+          desc: "Monthly college updates and events",
+          color: "bg-green-500",
+        },
       ].map((item, i) => (
         <div
           key={item.key}
@@ -284,13 +366,19 @@ function Settings() {
           <div className="flex items-center gap-3">
             <div className={`h-2.5 w-2.5 rounded-full ${item.color}`} />
             <div>
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item.label}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{item.desc}</p>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                {item.label}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {item.desc}
+              </p>
             </div>
           </div>
           <Toggle
             enabled={notifications[item.key as keyof typeof notifications]}
-            onChange={(val) => setNotifications((n) => ({ ...n, [item.key]: val }))}
+            onChange={(val) =>
+              setNotifications((n) => ({ ...n, [item.key]: val }))
+            }
           />
         </div>
       ))}
@@ -302,7 +390,9 @@ function Settings() {
       <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50">
         <div className="flex items-center gap-2 mb-4">
           <Shield className="h-4 w-4 text-green-500" />
-          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Change Password</h3>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+            Change Password
+          </h3>
         </div>
         <form className="space-y-3" onSubmit={handleChangePassword}>
           {[
@@ -311,28 +401,50 @@ function Settings() {
             { label: "Confirm New Password", name: "confirmPassword" as const },
           ].map(({ label, name }, i) => (
             <div key={name} className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                {label}
+              </label>
               <div className="relative">
                 <Input
                   type={showPass ? "text" : "password"}
                   placeholder={`Enter ${label.toLowerCase()}`}
                   value={passwords[name]}
-                  onChange={(event) => setPasswords((current) => ({ ...current, [name]: event.target.value }))}
+                  onChange={(event) =>
+                    setPasswords((current) => ({
+                      ...current,
+                      [name]: event.target.value,
+                    }))
+                  }
                   required
                   minLength={name === "currentPassword" ? undefined : 8}
                   className="pr-10 h-11 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 />
                 {i === 0 && (
-                  <button type="button" onClick={() => setShowPass(!showPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                    {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                  >
+                    {showPass ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 )}
               </div>
             </div>
           ))}
-          {passwordError && <p className="text-sm font-semibold text-red-600 dark:text-red-400">{passwordError}</p>}
-          {passwordMessage && <p className="text-sm font-semibold text-green-600 dark:text-green-400">{passwordMessage}</p>}
+          {passwordError && (
+            <p className="text-sm font-semibold text-red-600 dark:text-red-400">
+              {passwordError}
+            </p>
+          )}
+          {passwordMessage && (
+            <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+              {passwordMessage}
+            </p>
+          )}
           <button
             type="submit"
             disabled={passwordSaving}
@@ -367,9 +479,27 @@ function Settings() {
   );
 
   const themeOptions = [
-    { value: "light",  label: "Light",  icon: Sun,     desc: "Clean & bright",   grad: "from-yellow-400 to-orange-400" },
-    { value: "dark",   label: "Dark",   icon: Moon,    desc: "Easy on the eyes", grad: "from-slate-700 to-slate-900" },
-    { value: "system", label: "System", icon: Monitor, desc: "Follows OS theme",  grad: "from-blue-500 to-indigo-600" },
+    {
+      value: "light",
+      label: "Light",
+      icon: Sun,
+      desc: "Clean & bright",
+      grad: "from-yellow-400 to-orange-400",
+    },
+    {
+      value: "dark",
+      label: "Dark",
+      icon: Moon,
+      desc: "Easy on the eyes",
+      grad: "from-slate-700 to-slate-900",
+    },
+    {
+      value: "system",
+      label: "System",
+      icon: Monitor,
+      desc: "Follows OS theme",
+      grad: "from-blue-500 to-indigo-600",
+    },
   ];
 
   const renderAppearance = () => (
@@ -392,11 +522,19 @@ function Settings() {
                     : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:scale-[1.01]"
                 }`}
               >
-                <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${t.grad} flex items-center justify-center shadow-md`}>
+                <div
+                  className={`h-10 w-10 rounded-xl bg-gradient-to-br ${t.grad} flex items-center justify-center shadow-md`}
+                >
                   <Icon className="h-5 w-5 text-white" />
                 </div>
-                <p className={`text-sm font-bold ${active ? "text-blue-700 dark:text-blue-300" : "text-slate-600 dark:text-slate-400"}`}>{t.label}</p>
-                <p className="text-xs text-slate-400 dark:text-slate-500">{t.desc}</p>
+                <p
+                  className={`text-sm font-bold ${active ? "text-blue-700 dark:text-blue-300" : "text-slate-600 dark:text-slate-400"}`}
+                >
+                  {t.label}
+                </p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {t.desc}
+                </p>
                 {active && <CheckCircle className="h-4 w-4 text-blue-500" />}
               </button>
             );
@@ -405,12 +543,14 @@ function Settings() {
       </div>
 
       <div>
-        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">Display Density</h3>
+        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">
+          Display Density
+        </h3>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[
-            { id: "compact",     label: "Compact",     desc: "More content" },
+            { id: "compact", label: "Compact", desc: "More content" },
             { id: "comfortable", label: "Comfortable", desc: "Balanced" },
-            { id: "spacious",    label: "Spacious",    desc: "Easier reading" },
+            { id: "spacious", label: "Spacious", desc: "Easier reading" },
           ].map((d) => (
             <button
               key={d.id}
@@ -430,8 +570,12 @@ function Settings() {
 
       {/* Active theme preview */}
       <div className="p-4 rounded-2xl border-2 border-dashed border-blue-200 dark:border-blue-900/50 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-center">
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Currently Active</p>
-        <p className="text-sm font-black shimmer-text capitalize">{theme} mode is active ✓</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+          Currently Active
+        </p>
+        <p className="text-sm font-black shimmer-text capitalize">
+          {theme} mode is active ✓
+        </p>
       </div>
     </div>
   );
@@ -448,29 +592,33 @@ function Settings() {
       <AppSidebar />
       <SidebarInset>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/40 to-indigo-100/60 p-3 transition-colors duration-300 sm:p-4 lg:p-6 dark:from-[#0a0f1e] dark:via-[#0f172a] dark:to-[#1a0a2e]">
-
           <div className="animate-fade-slide-up delay-0">
-            <PageHeader title="Settings" subtitle="Manage your account preferences" />
+            <PageHeader
+              title="Settings"
+              subtitle="Manage your account preferences"
+            />
           </div>
 
           {/* Settings Layout */}
           <div className="animate-fade-slide-up delay-200 space-y-5">
             {/* Settings tabs */}
             <nav className="grid grid-cols-2 gap-2 rounded-2xl border border-white/60 bg-white/70 p-2 shadow-lg shadow-slate-200/40 backdrop-blur-xl sm:grid-cols-4 dark:border-white/5 dark:bg-slate-800/60 dark:shadow-black/10">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-                      activeTab === tab.id
-                        ? "grad-blue text-white shadow-lg shadow-blue-500/25"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700/70 hover:text-slate-900 dark:hover:text-slate-100"
-                    }`}
-                  >
-                    <tab.icon className={`h-4 w-4 flex-shrink-0 ${activeTab === tab.id ? "text-white" : tab.color}`} />
-                    {tab.label}
-                  </button>
-                ))}
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? "grad-blue text-white shadow-lg shadow-blue-500/25"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700/70 hover:text-slate-900 dark:hover:text-slate-100"
+                  }`}
+                >
+                  <tab.icon
+                    className={`h-4 w-4 flex-shrink-0 ${activeTab === tab.id ? "text-white" : tab.color}`}
+                  />
+                  {tab.label}
+                </button>
+              ))}
             </nav>
 
             {/* Content */}
@@ -482,7 +630,12 @@ function Settings() {
                       {(() => {
                         const t = tabs.find((t) => t.id === activeTab)!;
                         const Icon = t.icon;
-                        return <><Icon className={`h-5 w-5 ${t.color}`} />{t.label}</>;
+                        return (
+                          <>
+                            <Icon className={`h-5 w-5 ${t.color}`} />
+                            {t.label}
+                          </>
+                        );
                       })()}
                     </CardTitle>
                     {activeTab === "profile" && !isEditingProfile && (
@@ -511,7 +664,17 @@ function Settings() {
                             : "grad-blue text-white shadow-lg shadow-blue-500/30 hover:opacity-90"
                         }`}
                       >
-                        {profileSaving ? "Saving..." : saved ? <><CheckCircle className="h-4 w-4" /> Saved!</> : <><Save className="h-4 w-4" /> Save Changes</>}
+                        {profileSaving ? (
+                          "Saving..."
+                        ) : saved ? (
+                          <>
+                            <CheckCircle className="h-4 w-4" /> Saved!
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4" /> Save Changes
+                          </>
+                        )}
                       </button>
                       <button
                         type="button"
@@ -534,7 +697,6 @@ function Settings() {
               </Card>
             </div>
           </div>
-
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -40,10 +40,11 @@ function Sign() {
 
   useEffect(() => {
     if (auth.status === "succeeded" && auth.flow === "login") {
+      const destination = auth.user?.role === "admin" ? "/admin/dashboard" : "/dashboard";
       dispatch(clearAuthStatus());
-      navigate("/dashboard");
+      navigate(destination);
     }
-  }, [auth.flow, auth.status, dispatch, navigate]);
+  }, [auth.flow, auth.status, auth.user?.role, dispatch, navigate]);
 
   const handleSignIn = async () => {
     const user = {
@@ -59,12 +60,12 @@ function Sign() {
       setErrors({});
       dispatch(loginRequest(user));
     }
-    catch (err: any) {
-      if (err.inner) {
+    catch (err: unknown) {
+      if (err instanceof yup.ValidationError) {
         const validationErrors: Record<string, string> = {};
 
-        err.inner.forEach((item: any) => {
-          validationErrors[item.path] = item.message;
+        err.inner.forEach((item) => {
+          if (item.path) validationErrors[item.path] = item.message;
         });
 
         setErrors(validationErrors);
@@ -79,12 +80,12 @@ function Sign() {
   return (
     <div className="bg-gradient-to-br from-white via-slate-50 to-blue-200">
    <div className="flex min-h-screen items-center justify-center px-4 py-4 sm:px-6">
-  <Card className="w-full max-w-6xl overflow-hidden rounded-3xl border-0 shadow-2xl sm:rounded-[40px]">
+  <Card className="w-full max-w-[800px] overflow-hidden rounded-3xl border-0 shadow-2xl sm:rounded-[40px]">
     <div className="grid bg-slate-100 lg:grid-cols-2">
       
 
             {/* Left Section */}
-            <div className="relative hidden min-h-[620px] flex-col justify-center overflow-hidden bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 p-8 text-white lg:flex xl:p-10">
+            <div className="relative hidden min-h-[420px] flex-col justify-center overflow-hidden bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 p-8 text-white lg:flex xl:p-10">
               <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/10" />
               <div className="absolute -bottom-28 -right-20 h-80 w-80 rounded-full bg-indigo-900/20" />
 
@@ -93,16 +94,16 @@ function Sign() {
                   {/* <Sparkles className="h-7 w-7 text-yellow-200" /> */}
               
                 <h1 className="text-4xl font-black leading-tight tracking-tight xl:text-5xl">Hello,<br />Welcome!</h1>
-                <p className="mt-5 max-w-sm text-lg leading-relaxed text-blue-100">
+                {/* <p className="mt-5 max-w-sm text-lg leading-relaxed text-blue-100">
                   Sign in to continue managing your courses, assignments, attendance and results.
-                </p>
-                <div className="mt-8 space-y-3 text-sm font-medium text-blue-50">
+                </p> */}
+                {/* <div className="mt-8 space-y-3 text-sm font-medium text-blue-50">
                   {["Your academic dashboard in one place", "Simple and secure account access"].map((item) => (
                     <div key={item} className="flex items-center gap-3">
                       <CheckCircle2 className="h-5 w-5 text-green-300" /> {item}
                     </div>
                   ))}
-                </div>
+                </div> */}
                 <p className="mt-10 text-sm text-blue-100">Don't have an account?</p>
                 <Link to="/create" className="mt-3 inline-flex rounded-xl border border-white/40 bg-white/10 px-5 py-2.5 text-sm font-bold text-white shadow-lg backdrop-blur transition hover:bg-white hover:text-blue-600">
                   Create Account
@@ -111,7 +112,7 @@ function Sign() {
             </div>
 
             {/* Right Section */}
-            <div className="flex flex-col justify-center bg-slate-100 p-6 sm:p-8 lg:p-10">
+            <div className="flex flex-col justify-center bg-slate-100 p-6 sm:p-6 lg:p-8">
               <div className="mb-6 text-center sm:mb-8">
                 <h2 className="text-3xl font-bold text-slate-800 sm:text-4xl">
                   Sign In

@@ -1,8 +1,9 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { academicPrograms } = require("../constants/academicPrograms");
 
-const createToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+const createToken = (user) => {
+  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };
@@ -16,6 +17,8 @@ const createUserResponse = (user) => ({
   semester: user.semester || "",
   rollNo: user.rollNo || "",
   profileImage: user.profileImage || "",
+  role: user.role || "student",
+  isActive: user.isActive !== false,
 });
 
 const validateAuthFields = (res, fields) => {
@@ -35,10 +38,22 @@ const validateAuthFields = (res, fields) => {
 // Register User
 const register = async (req, res) => {
   try {
-    const { name, email, password, phone, program, semester, rollNo } = req.body;
+    const { name, email, password, phone, program, semester, rollNo } =
+      req.body;
 
-    if (!validateAuthFields(res, [["Name", name], ["Email", email], ["Password", password]])) {
+    if (
+      !validateAuthFields(res, [
+        ["Name", name],
+        ["Email", email],
+        ["Password", password],
+        ["Program", program],
+      ])
+    ) {
       return;
+    }
+
+    if (!academicPrograms.includes(program)) {
+      return res.status(400).json({ message: "Select a valid program" });
     }
 
     // Check if email already exists
@@ -60,16 +75,15 @@ const register = async (req, res) => {
       rollNo,
       password,
       profileImage: req.file ? `/uploads/${req.file.filename}` : "",
-    });                   
+    });
 
-    const token = createToken(user._id);
+    const token = createToken(user);
 
     return res.status(201).json({
       message: "Account created successfully",
       token,
       user: createUserResponse(user),
     });
-
   } catch (error) {
     console.error("Register Error:", error);
 
@@ -82,21 +96,23 @@ const register = async (req, res) => {
 // Login User
 const login = async (req, res) => {
   try {
-    console.log("login");
     const { email, password } = req.body;
 
-    if (!validateAuthFields(res, [["Email", email], ["Password", password]])) {
+    if (
+      !validateAuthFields(res, [
+        ["Email", email],
+        ["Password", password],
+      ])
+    ) {
       return;
     }
-
-    console.log("Login attempt for email:", email);
 
     // Check email
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
+      return res.status(401).json({
+        message: "Invalid email or password",
       });
     }
 
@@ -105,8 +121,12 @@ const login = async (req, res) => {
 
     if (!isPasswordValid) {
       return res.status(401).json({
-        message: "Invalid Password",
+        message: "Invalid email or password",
       });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({ message: "This account is inactive" });
     }
 
     if (!user.password.startsWith("$2")) {
@@ -115,14 +135,13 @@ const login = async (req, res) => {
       await user.save();
     }
 
-    const token = createToken(user._id);
+    const token = createToken(user);
 
     return res.status(200).json({
       message: "Login Successful",
       token,
       user: createUserResponse(user),
     });
-
   } catch (error) {
     console.error("Login Error:", error);
 

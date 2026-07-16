@@ -1,17 +1,18 @@
 const mongoose = require("mongoose");
+const { academicPrograms } = require("../constants/academicPrograms");
 const assignmentSchema = new mongoose.Schema(
-
-    {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+  {
+    program: {
+      type: String,
       required: true,
+      trim: true,
       index: true,
+      enum: academicPrograms,
     },
-    title:{
-      type:String,
+    title: {
+      type: String,
       required: true,
-      trim:true,
+      trim: true,
     },
 
     subject: {
@@ -25,8 +26,8 @@ const assignmentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Submitted"],
-      default: "Pending",
+      enum: ["Active", "Closed"],
+      default: "Active",
     },
     description: {
       type: String,
@@ -41,7 +42,7 @@ const assignmentSchema = new mongoose.Schema(
   {
     timestamps: true,
     bufferCommands: false,
-  }
+  },
 );
 
 module.exports = mongoose.model("Assignment", assignmentSchema);

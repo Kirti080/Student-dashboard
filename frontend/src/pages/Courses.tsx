@@ -1,357 +1,176 @@
-import { type FormEvent, useEffect, useState } from "react";
-import type { AxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { BookOpen, GraduationCap, LockKeyhole, UserRound } from "lucide-react";
+import axios from "axios";
+import axiosConfig from "@/api/axiosConfig";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PageHeader } from "@/components/PageHeader";
-
-import {
-  SidebarProvider,
-  SidebarInset,
-} from "@/components/ui/sidebar";
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import axiosConfig from "@/api/axiosConfig";
-
-import {
-  BookOpen,
-  Clock,
-  Plus,
-  User,
-  X,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 type Course = {
-  _id?: string;
+  _id: string;
   name: string;
   faculty: string;
-  progress: number;
   credits: number;
+  progress: number;
+  program: string;
 };
 
-function Courses() {
+export default function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    faculty: "",
-    progress: "0",
-    credits: "3",
-  });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axiosConfig.get<{ courses: Course[] }>("/courses");
-
-        setCourses(response.data.courses);
-      } catch (error) {
-        console.error("Fetch courses error:", error);
-      }
-    };
-
-    fetchCourses();
+    axiosConfig
+      .get<{ courses: Course[] }>("/courses")
+      .then((response) => setCourses(response.data.courses))
+      .catch((requestError) =>
+        setError(
+          axios.isAxiosError<{ message?: string }>(requestError)
+            ? requestError.response?.data?.message || "Unable to load courses"
+            : "Unable to load courses",
+        ),
+      )
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleCreateCourse = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
-    setSaving(true);
-
-    try {
-      const response = await axiosConfig.post<{ course: Course }>("/courses", {
-        name: form.name,
-        faculty: form.faculty,
-        progress: Number(form.progress),
-        credits: Number(form.credits),
-      });
-
-      setCourses((currentCourses) => [response.data.course, ...currentCourses]);
-      setForm({
-        name: "",
-        faculty: "",
-        progress: "0",
-        credits: "3",
-      });
-      setOpen(false);
-    } catch (error) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-
-      setError(axiosError.response?.data?.message || "Could not create course");
-    } finally {
-      setSaving(false);
-    }
-  };
+  const totalCredits = courses.reduce(
+    (sum, course) => sum + (course.credits || 0),
+    0,
+  );
 
   return (
     <SidebarProvider defaultOpen>
       <AppSidebar />
-
       <SidebarInset>
-        <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 p-3 sm:p-4 lg:p-6">
+        <main className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 p-3 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 sm:p-5 lg:p-6">
+          <PageHeader
+            title="Courses"
+            subtitle="Courses assigned to your academic program"
+          />
 
-          {/* Header */}
- <PageHeader
-  title="Courses"
-  subtitle="Courses you have Enrolled"
-/>
-
-          {/* Hero Card */}
-
-          <Card className="rounded-3xl border-0 shadow-lg mb-8 bg-gradient-to-r from-blue-700 to-blue-500 text-white">
-            <CardContent className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <section className="relative mb-7 overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 p-6 text-white shadow-2xl">
+            <div className="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-white/10" />
+            <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
               <div>
-                <h2 className="text-3xl font-bold">
-                  {courses.length} Active Courses
+                <p className="text-sm font-semibold text-blue-100">
+                  Program curriculum
+                </p>
+                <h2 className="mt-1 text-3xl font-black">
+                  {courses.length} Assigned Courses
                 </h2>
-
                 <p className="mt-2 text-blue-100">
-                  Track progress, credits and faculty information.
+                  These courses are managed by your administrator.
                 </p>
               </div>
+              <div className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/15 px-4 py-3 backdrop-blur">
+                <LockKeyhole className="h-5 w-5" />
+                <div>
+                  <p className="text-sm font-bold">Read-only access</p>
+                  <p className="text-xs text-blue-100">Admin controlled</p>
+                </div>
+              </div>
+            </div>
+          </section>
 
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button className="h-11 w-full gap-2 bg-white text-blue-700 hover:bg-blue-50 sm:w-auto">
-                    <Plus className="h-4 w-4" />
-                    Create Course
-                  </Button>
-                </DialogTrigger>
-
-                <DialogContent
-                  showCloseButton={false}
-                  className="overflow-hidden rounded-3xl bg-white p-0 text-slate-900 shadow-2xl sm:max-w-xl"
-                >
-                  <DialogHeader className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 p-6">
-                    <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10" />
-
-                    <DialogClose asChild>
-                      <button
-                        type="button"
-                        className="absolute right-5 top-5 z-10 rounded-full bg-white/20 p-2 text-white transition-colors hover:bg-white/30"
-                      >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Close</span>
-                      </button>
-                    </DialogClose>
-
-                    <div className="relative flex items-center gap-4">
-                      <div className="rounded-2xl bg-white/20 p-3 backdrop-blur">
-                        <Plus className="h-6 w-6 text-white" />
-                      </div>
-
-                      <div>
-                        <DialogTitle className="text-2xl font-black text-white">
-                          Create Course
-                        </DialogTitle>
-                        <p className="text-sm font-medium text-blue-100">
-                          Add a new course to your dashboard
-                        </p>
-                      </div>
-                    </div>
-                  </DialogHeader>
-
-                  <form className="space-y-5 p-6" onSubmit={handleCreateCourse}>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-slate-700">
-                        Course Name *
-                      </label>
-                      <Input
-                        placeholder="Course name"
-                        value={form.name}
-                        onChange={(event) =>
-                          setForm({ ...form, name: event.target.value })
-                        }
-                        className="h-12 rounded-xl border-2 border-slate-200 bg-white px-4 text-base focus-visible:border-blue-500 focus-visible:ring-blue-500/20"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-slate-700">
-                        Faculty Name *
-                      </label>
-                      <Input
-                        placeholder="Faculty name"
-                        value={form.faculty}
-                        onChange={(event) =>
-                          setForm({ ...form, faculty: event.target.value })
-                        }
-                        className="h-12 rounded-xl border-2 border-slate-200 bg-white px-4 text-base focus-visible:border-blue-500 focus-visible:ring-blue-500/20"
-                        required
-                      />
-                    </div>
-
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700">
-                          Progress
-                        </label>
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          placeholder="0"
-                          value={form.progress}
-                          onChange={(event) =>
-                            setForm({ ...form, progress: event.target.value })
-                          }
-                          className="h-12 rounded-xl border-2 border-slate-200 bg-white px-4 text-base focus-visible:border-blue-500 focus-visible:ring-blue-500/20"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700">
-                          Credits *
-                        </label>
-                        <Input
-                          type="number"
-                          min="1"
-                          placeholder="3"
-                          value={form.credits}
-                          onChange={(event) =>
-                            setForm({ ...form, credits: event.target.value })
-                          }
-                          className="h-12 rounded-xl border-2 border-slate-200 bg-white px-4 text-base focus-visible:border-blue-500 focus-visible:ring-blue-500/20"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {error && (
-                      <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
-                        {error}
-                      </p>
-                    )}
-
-                    <div className="flex gap-3 pt-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setOpen(false)}
-                        className="h-12 flex-1 rounded-xl border-2 border-slate-200 bg-white text-base font-bold text-slate-600 hover:bg-slate-50"
-                      >
-                        Cancel
-                      </Button>
-
-                      <Button
-                        type="submit"
-                        className="h-12 flex-1 gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-base font-bold text-white shadow-lg shadow-blue-500/25 hover:opacity-90"
-                        disabled={
-                          saving ||
-                          !form.name.trim() ||
-                          !form.faculty.trim() ||
-                          !form.credits
-                        }
-                      >
-                        <Plus className="h-4 w-4" />
-                        {saving ? "Creating..." : "Create Course"}
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-
-          {/* Courses Grid */}
-
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {courses.length === 0 && (
-              <Card className="rounded-3xl border-0 shadow-md md:col-span-2 xl:col-span-3">
-                <CardContent className="p-8 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100">
-                    <BookOpen className="h-7 w-7 text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    No courses yet
-                  </h3>
-                  <p className="mt-1 text-sm font-medium text-slate-500">
-                    Create your first course to start tracking progress here.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {courses.map((course) => (
-              <Card
-                key={course._id || course.name}
-                className="
-                  rounded-3xl
-                  border-0
-                  shadow-md
-                  hover:shadow-xl
-                  transition-all
-                "
-              >
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <BookOpen className="h-8 w-8 text-blue-600" />
-
-                    <Badge>
-                      {course.credits} Credits
-                    </Badge>
-                  </div>
-
-                  <CardTitle className="text-lg mt-3">
-                    {course.name}
-                  </CardTitle>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <User className="h-4 w-4" />
-                    {course.faculty}
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2 text-sm font-medium">
-                      <span>Progress</span>
-
-                      <span>
-                        {course.progress}%
-                      </span>
-                    </div>
-
-                    <Progress
-                      value={course.progress}
-                      className="h-3"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Clock className="h-4 w-4" />
-                    Semester Ongoing
-                  </div>
-
-                </CardContent>
-              </Card>
-            ))}
+          <div className="mb-6 grid gap-4 sm:grid-cols-2">
+            <Card className="rounded-3xl border-0 shadow-lg">
+              <CardContent className="flex items-center gap-4 p-5">
+                <div className="rounded-2xl bg-blue-100 p-3 text-blue-600 dark:bg-blue-900/40">
+                  <BookOpen className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Total courses</p>
+                  <p className="text-2xl font-black">{courses.length}</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="rounded-3xl border-0 shadow-lg">
+              <CardContent className="flex items-center gap-4 p-5">
+                <div className="rounded-2xl bg-purple-100 p-3 text-purple-600 dark:bg-purple-900/40">
+                  <GraduationCap className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Total credits</p>
+                  <p className="text-2xl font-black">{totalCredits}</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-        </div>
+          {loading ? (
+            <Card className="rounded-3xl border-0 shadow-lg">
+              <CardContent className="p-10 text-center text-slate-500">
+                Loading courses...
+              </CardContent>
+            </Card>
+          ) : error ? (
+            <Card className="rounded-3xl border-0 shadow-lg">
+              <CardContent className="p-10 text-center font-semibold text-red-600">
+                {error}
+              </CardContent>
+            </Card>
+          ) : courses.length === 0 ? (
+            <Card className="rounded-3xl border-0 shadow-lg">
+              <CardContent className="p-10 text-center">
+                <BookOpen className="mx-auto h-10 w-10 text-blue-400" />
+                <h3 className="mt-3 text-lg font-black">No courses assigned</h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  Courses will appear here after an administrator adds them to
+                  your program.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {courses.map((course) => (
+                <Card
+                  key={course._id}
+                  className="overflow-hidden rounded-3xl border-0 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
+                >
+                  <div className="h-2 bg-gradient-to-r from-blue-600 to-purple-600" />
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="rounded-2xl bg-blue-100 p-3 text-blue-600 dark:bg-blue-900/40">
+                        <BookOpen className="h-6 w-6" />
+                      </div>
+                      <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 dark:bg-blue-900/40 dark:text-blue-200">
+                        {course.credits} credits
+                      </Badge>
+                    </div>
+                    <h3 className="mt-5 text-xl font-black text-slate-900 dark:text-white">
+                      {course.name}
+                    </h3>
+                    <div className="mt-4 flex items-center gap-2 text-sm text-slate-500">
+                      <UserRound className="h-4 w-4 text-blue-500" />
+                      {course.faculty}
+                    </div>
+                    <div className="mt-4">
+                      <div className="mb-1.5 flex items-center justify-between text-xs font-semibold text-slate-500">
+                        <span>Progress</span>
+                        <span>{course.progress}%</span>
+                      </div>
+                      <div className="h-2.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-600"
+                          style={{
+                            width: `${Math.min(100, Math.max(0, course.progress))}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      {course.program}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
 }
-
-export default Courses;

@@ -27,7 +27,7 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { name, email, phone, program, semester, rollNo } = req.body;
+    const { name, email, phone } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({
@@ -52,14 +52,11 @@ const updateProfile = async (req, res) => {
         name,
         email,
         phone,
-        program,
-        semester,
-        rollNo,
       },
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
 
     return res.status(200).json({

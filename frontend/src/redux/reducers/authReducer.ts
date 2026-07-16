@@ -10,8 +10,18 @@ import {
 } from "../types/authTypes";
 import type { AuthAction, AuthState } from "../types/authTypes";
 
+const storedUser = (() => {
+  try {
+    const value = localStorage.getItem("authUser");
+    return value ? JSON.parse(value) : null;
+  } catch {
+    localStorage.removeItem("authUser");
+    return null;
+  }
+})();
+
 const initialState: AuthState = {
-  user: null,
+  user: storedUser,
   token: localStorage.getItem("token"),
   loading: false,
   error: null,
@@ -80,6 +90,7 @@ const authReducer = (
 
     case LOGOUT:
       localStorage.removeItem("token");
+      localStorage.removeItem("authUser");
       return {
         ...initialState,
         token: null,

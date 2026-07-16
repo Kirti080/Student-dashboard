@@ -28,6 +28,7 @@ function* loginSaga(action: Extract<AuthAction, { type: typeof LOGIN_REQUEST }>)
     if (token) {
       localStorage.setItem("token", token);
     }
+    if (data.user) localStorage.setItem("authUser", JSON.stringify(data.user));
 
     yield put(loginSuccess(data.user || null, token, data.message || "Login successful"));
   } catch (error) {
@@ -45,6 +46,7 @@ function* registerSaga(
     if (token) {
       localStorage.setItem("token", token);
     }
+    if (data.user) localStorage.setItem("authUser", JSON.stringify(data.user));
 
     yield put(
       registerSuccess(data.user || null, token, data.message || "Account created")

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const { academicPrograms } = require("../constants/academicPrograms");
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,6 +23,10 @@ const userSchema = new mongoose.Schema(
     program: {
       type: String,
       default: "",
+      enum: ["", ...academicPrograms],
+      required() {
+        return this.role === "student";
+      },
     },
 
     semester: {
@@ -34,9 +39,9 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
-      profileImage: {
-       type: String,
-       default: "",
+    profileImage: {
+      type: String,
+      default: "",
     },
 
     password: {
@@ -44,14 +49,30 @@ const userSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
-
-  
+    role: {
+      type: String,
+      enum: ["student", "admin"],
+      default: "student",
+      index: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
   },
   {
     timestamps: true,
     bufferCommands: false,
-  }
+  },
 );
+
+userSchema.index({
+  name: "text",
+  email: "text",
+  rollNo: "text",
+  program: "text",
+});
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) {

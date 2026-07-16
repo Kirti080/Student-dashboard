@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
+const { academicPrograms } = require("../constants/academicPrograms");
 
 const courseSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    program: {
+      type: String,
       required: true,
+      trim: true,
       index: true,
+      enum: academicPrograms,
     },
     name: {
       type: String,
@@ -18,22 +20,19 @@ const courseSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    progress: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 100,
-    },
-    credits: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
   },
   {
     timestamps: true,
     bufferCommands: false,
-  }
+  },
+);
+
+courseSchema.index(
+  { program: 1, name: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { program: { $type: "string" } },
+  },
 );
 
 module.exports = mongoose.model("Course", courseSchema);

@@ -25,7 +25,7 @@ export const sendChatMessage = async (
     return response.data.reply;
   } catch (error) {
     if (axios.isAxiosError<{ message?: string }>(error)) {
-      throw new Error(error.response?.data?.message || "The AI assistant is unavailable.");
+      throw new Error(error.response?.data?.message || "The AI assistant is unavailable.", { cause: error });
     }
 
     throw error;
