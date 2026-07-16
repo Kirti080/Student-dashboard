@@ -435,32 +435,41 @@ export default function AdminAttendance() {
       <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
         <DialogContent
           showCloseButton={false}
-          className="flex h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] flex-col gap-0 overflow-hidden rounded-3xl bg-white p-0 sm:max-w-6xl dark:bg-slate-950"
+          className="flex h-[calc(100vh-3rem)] max-w-[calc(100vw-2rem)] flex-col gap-0 overflow-hidden rounded-[2rem] border-0 bg-slate-50 p-0 shadow-2xl shadow-slate-950/30 sm:max-w-5xl dark:bg-slate-950"
         >
-          <div className="relative bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 p-5 text-white">
+          <div className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 px-6 py-5 text-white">
+            <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-white/10" />
+            <div className="absolute right-28 top-12 h-28 w-28 rounded-full bg-white/5" />
             <button
               type="button"
               onClick={() => setRegisterOpen(false)}
-              className="absolute right-4 top-4 rounded-full bg-white/15 p-2 hover:bg-white/25"
+              className="absolute right-5 top-5 z-10 rounded-full bg-white/15 p-2.5 text-white transition hover:bg-white/25"
             >
               <X className="h-5 w-5" />
             </button>
-            <DialogTitle className="text-2xl font-black text-white">
-              {editingId ? "Edit Attendance" : "Mark Attendance"}
-            </DialogTitle>
-            <DialogDescription className="mt-1 text-blue-100">
-              Complete the class register and save everyone in one operation.
-            </DialogDescription>
+            <div className="relative flex items-center gap-4">
+              <div className="rounded-2xl bg-white/15 p-3 shadow-inner backdrop-blur">
+                <CalendarCheck className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl font-black text-white sm:text-3xl">
+                  {editingId ? "Edit Attendance" : "Mark Attendance"}
+                </DialogTitle>
+                <DialogDescription className="mt-1 text-sm font-medium text-blue-100">
+                  Complete the class register and save everyone in one operation.
+                </DialogDescription>
+              </div>
+            </div>
           </div>
 
-          <div className="grid gap-3 border-b p-4 md:grid-cols-[1fr_1fr_auto_auto_auto] md:items-end">
+          <div className="grid gap-4 bg-white p-5 shadow-sm md:grid-cols-[1fr_1fr_auto_auto_auto] md:items-end dark:bg-slate-900">
             <label className="text-sm font-bold text-slate-700 dark:text-slate-200">
               Course
               <select
                 value={course}
                 disabled={Boolean(editingId)}
                 onChange={(event) => void loadStudents(event.target.value)}
-                className="mt-2 h-10 w-full rounded-xl border-2 border-slate-200 bg-white px-3 dark:bg-slate-900"
+                className="mt-2 h-12 w-full rounded-2xl border-2 border-slate-200 bg-slate-50 px-4 text-base outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-950"
               >
                 <option value="">Select course</option>
                 {courses.map((item) => (
@@ -478,53 +487,63 @@ export default function AdminAttendance() {
                 />
               </div>
             </label>
-            <Button variant="outline" onClick={() => setAll("Present")} className="h-10 rounded-xl text-emerald-700">
+            <Button variant="outline" onClick={() => setAll("Present")} className="h-12 rounded-2xl border-emerald-200 bg-emerald-50 px-4 font-bold text-emerald-700 hover:bg-emerald-100">
               All Present
             </Button>
-            <Button variant="outline" onClick={() => setAll("Absent")} className="h-10 rounded-xl text-red-700">
+            <Button variant="outline" onClick={() => setAll("Absent")} className="h-12 rounded-2xl border-red-200 bg-red-50 px-4 font-bold text-red-700 hover:bg-red-100">
               All Absent
             </Button>
-            <Button variant="outline" onClick={() => setAll("Present")} className="h-10 rounded-xl">
+            <Button variant="outline" onClick={() => setAll("Present")} className="h-12 rounded-2xl px-4 font-bold">
               Reset
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 border-b bg-slate-50 p-3 sm:grid-cols-4 dark:bg-slate-900">
+          <div className="grid grid-cols-2 gap-3 bg-slate-100/80 px-5 py-4 sm:grid-cols-4 dark:bg-slate-950">
             {[
               ["Total", records.length, "text-slate-900 dark:text-white"],
               ["Present", counts.present, "text-emerald-600"],
               ["Absent", counts.absent, "text-red-600"],
               ["Percentage", `${counts.percentage}%`, "text-blue-600"],
             ].map(([label, value, color]) => (
-              <div key={label} className="rounded-xl bg-white px-4 py-2 text-center shadow-sm dark:bg-slate-800">
-                <p className="text-xs text-slate-500">{label}</p>
-                <p className={`text-xl font-black ${color}`}>{value}</p>
+              <div key={label} className="rounded-2xl border border-white bg-white px-4 py-3 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <p className="text-sm font-semibold text-slate-500">{label}</p>
+                <p className={`mt-1 text-2xl font-black ${color}`}>{value}</p>
               </div>
             ))}
           </div>
 
-          <div className="border-b p-3">
+          <div className="bg-white px-5 py-4 dark:bg-slate-900">
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search by name, roll number or email"
-                className="h-10 rounded-xl border-2 border-slate-200 pl-10"
+                className="h-11 rounded-2xl border-2 border-slate-200 bg-slate-50 pl-10 text-base"
               />
             </div>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-auto">
+          <div className="min-h-0 flex-1 overflow-auto bg-white dark:bg-slate-900">
             {registerLoading ? (
               <p className="p-10 text-center text-slate-500">Loading class register…</p>
             ) : records.length === 0 ? (
-              <p className="p-10 text-center text-slate-500">
-                Select a course to load its active students.
-              </p>
+              <div className="flex h-full min-h-72 items-center justify-center p-8">
+                <div className="max-w-sm rounded-3xl border border-slate-100 bg-slate-50 p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                    <Users className="h-7 w-7" />
+                  </div>
+                  <p className="text-lg font-black text-slate-900 dark:text-white">
+                    Select a course first
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    Active students will appear here after you choose a course.
+                  </p>
+                </div>
+              </div>
             ) : (
               <table className="w-full min-w-[760px] text-left">
-                <thead className="sticky top-0 z-10 bg-slate-100 text-sm text-slate-500 dark:bg-slate-900">
+                <thead className="sticky top-0 z-10 bg-slate-100 text-sm text-slate-500 shadow-sm dark:bg-slate-950">
                   <tr>
                     <th className="px-4 py-3">Roll number</th>
                     <th className="px-4 py-3">Student</th>
@@ -534,7 +553,7 @@ export default function AdminAttendance() {
                 </thead>
                 <tbody className="divide-y dark:divide-slate-800">
                   {visibleRecords.map((record) => (
-                    <tr key={record.student}>
+                    <tr key={record.student} className="transition hover:bg-blue-50/50 dark:hover:bg-slate-800/70">
                       <td className="px-4 py-3 font-semibold text-slate-500">
                         {record.studentDetails.rollNo || "—"}
                       </td>
@@ -562,7 +581,7 @@ export default function AdminAttendance() {
                           maxLength={500}
                           onChange={(event) => updateRecord(record.student, { remarks: event.target.value })}
                           placeholder="Optional remark"
-                          className="h-9 rounded-xl border-slate-200"
+                          className="h-10 rounded-xl border-slate-200 bg-slate-50"
                         />
                       </td>
                     </tr>
@@ -572,16 +591,16 @@ export default function AdminAttendance() {
             )}
           </div>
 
-          <div className="flex flex-col gap-3 border-t p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-slate-200 bg-white p-5 shadow-[0_-8px_24px_rgba(15,23,42,0.06)] sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900">
             <p className="text-sm font-semibold text-red-600">{formError}</p>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setRegisterOpen(false)} className="h-10 rounded-xl px-5">
+              <Button variant="outline" onClick={() => setRegisterOpen(false)} className="h-12 rounded-2xl px-7 font-bold">
                 Cancel
               </Button>
               <Button
                 onClick={() => void save()}
                 disabled={saving || records.length === 0}
-                className="h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 font-bold text-white"
+                className="h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 px-8 font-bold text-white shadow-lg shadow-blue-500/20"
               >
                 {saving ? "Saving…" : editingId ? "Update Attendance" : "Save Attendance"}
               </Button>
