@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const attendanceSchema = new mongoose.Schema(
   {
+    session: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AttendanceSession",
+      index: true,
+    },
     student: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

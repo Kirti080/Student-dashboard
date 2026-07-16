@@ -467,9 +467,8 @@ export default function AdminAttendance() {
               Course
               <select
                 value={course}
-                disabled={Boolean(editingId)}
                 onChange={(event) => void loadStudents(event.target.value)}
-                className="mt-2 h-12 w-full rounded-2xl border-2 border-slate-200 bg-slate-50 px-4 text-base outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-950"
+                className="mt-2 h-12 w-full rounded-2xl border-2 border-slate-200 bg-slate-50 px-4 text-base outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:bg-slate-950"
               >
                 <option value="">Select course</option>
                 {courses.map((item) => (

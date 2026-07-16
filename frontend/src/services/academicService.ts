@@ -15,6 +15,15 @@ export type AttendanceRecord = {
   status: "Present" | "Absent" | "Late" | "Excused";
   remarks?: string;
 };
+export type AttendanceSummary = {
+  total: number;
+  attended: number;
+  missed: number;
+  percentage: number;
+};
+export type SubjectAttendance = AttendanceSummary & {
+  course: CourseRef;
+};
 export type ResultRecord = {
   _id: string;
   course: CourseRef;
@@ -52,7 +61,8 @@ export const getAttendance = async () =>
   (
     await axiosConfig.get<{
       data: AttendanceRecord[];
-      summary: { total: number; attended: number; percentage: number };
+      summary: AttendanceSummary;
+      subjects: SubjectAttendance[];
     }>("/attendance")
   ).data;
 export const getResults = async () =>

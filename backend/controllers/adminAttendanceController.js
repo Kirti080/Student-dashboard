@@ -195,10 +195,28 @@ const getSession = async (req, res, next) => {
     if (!session) {
       return res.status(404).json({ success: false, message: "Session not found" });
     }
-    const records = await Attendance.find({ session: session._id })
+    let records = await Attendance.find({ session: session._id })
       .populate("student", "name rollNo email program semester isActive")
       .sort({ "student.rollNo": 1 })
       .lean();
+    // Attendance rows created before the session field was added were saved
+    // without that relation. Recover them using the session's unique
+    // course/date pair and persist the link so subsequent reads are direct.
+    if (records.length === 0) {
+      records = await Attendance.find({
+        course: session.course._id,
+        date: session.date,
+      })
+        .populate("student", "name rollNo email program semester isActive")
+        .sort({ "student.rollNo": 1 })
+        .lean();
+      if (records.length > 0) {
+        await Attendance.updateMany(
+          { _id: { $in: records.map((record) => record._id) } },
+          { $set: { session: session._id } },
+        );
+      }
+    }
     return res.json({ success: true, data: { ...session, records } });
   } catch (error) {
     return next(error);
@@ -215,36 +233,42 @@ const updateSession = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Session not found" });
     }
     const { course, date } = await validateRegister({
-      courseId: existing.course,
-      dateValue: existing.date,
+      courseId: req.body.course,
+      dateValue: req.body.date,
       records: req.body.records,
     });
-    const existingRecords = await Attendance.find({ session: existing._id })
-      .select("student")
-      .lean();
-    const allowed = new Set(existingRecords.map((record) => String(record.student)));
-    if (
-      req.body.records.length !== allowed.size ||
-      req.body.records.some((record) => !allowed.has(String(record.student)))
-    ) {
-      return res.status(400).json({
+    const duplicate = await AttendanceSession.findOne({
+      _id: { $ne: existing._id },
+      course: course._id,
+      date,
+    }).lean();
+    if (duplicate) {
+      return res.status(409).json({
         success: false,
-        message: "The saved session roster cannot be changed",
+        message: "Attendance already exists for this course and date",
+        existingSessionId: duplicate._id,
       });
     }
-    await Attendance.bulkWrite(
+    // Rebuild the rows because changing course can also change the class roster.
+    // Include the legacy course/date selector for rows saved before `session`
+    // became part of the Attendance schema.
+    await Attendance.deleteMany({
+      $or: [
+        { session: existing._id },
+        { course: existing.course, date: existing.date },
+      ],
+    });
+    await Attendance.insertMany(
       req.body.records.map((record) => ({
-        updateOne: {
-          filter: { session: existing._id, student: record.student },
-          update: {
-            $set: {
-              status: record.status,
-              remarks: String(record.remarks || "").trim(),
-              markedBy: req.user._id,
-            },
-          },
-        },
+        session: existing._id,
+        student: record.student,
+        course: course._id,
+        date,
+        status: record.status,
+        remarks: String(record.remarks || "").trim(),
+        markedBy: req.user._id,
       })),
+      { ordered: true },
     );
     const presentCount = req.body.records.filter(
       (record) => record.status === "Present",
@@ -252,6 +276,9 @@ const updateSession = async (req, res, next) => {
     const updated = await AttendanceSession.findByIdAndUpdate(
       existing._id,
       {
+        course: course._id,
+        program: course.program,
+        date,
         markedBy: req.user._id,
         totalStudents: req.body.records.length,
         presentCount,
