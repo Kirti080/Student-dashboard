@@ -7,7 +7,6 @@ import {
   CalendarDays,
   ClipboardList,
   LayoutDashboard,
-  LogOut,
   Settings,
   Users,
 } from "lucide-react";
@@ -24,6 +23,8 @@ import {
 } from "@/components/ui/sidebar";
 import { logout } from "@/redux/actions/authActions";
 import type { RootState } from "@/redux/reducers";
+import SidebarAccountCard from "@/components/SidebarAccountCard";
+import getAssetURL from "@/utils/getAssetURL";
 
 const links = [
   [
@@ -62,9 +63,8 @@ export default function AdminSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const name = useSelector(
-    (root: RootState) => root.auth.user?.name || "Administrator",
-  );
+  const user = useSelector((root: RootState) => root.auth.user);
+  const name = user?.name || "Administrator";
 
   const handleLogout = () => {
     dispatch(logout());
@@ -143,14 +143,13 @@ export default function AdminSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-white/10 p-3">
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-3 py-3 text-left text-sm font-semibold text-white transition hover:bg-white/15"
-        >
-          <LogOut className="h-4 w-4 text-blue-200" />
-          {!collapsed && <span className="truncate">Sign out · {name}</span>}
-        </button>
+        <SidebarAccountCard
+          name={name}
+          subtitle={user?.email || "Portal Administrator"}
+          image={getAssetURL(user?.profileImage)}
+          collapsed={collapsed}
+          onLogout={handleLogout}
+        />
       </SidebarFooter>
     </Sidebar>
   );

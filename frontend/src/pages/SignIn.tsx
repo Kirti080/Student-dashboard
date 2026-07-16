@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Eye, EyeOff, } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { clearAuthStatus, loginRequest } from "@/redux/actions/authActions";
 import type { RootState } from "@/redux/reducers";
 

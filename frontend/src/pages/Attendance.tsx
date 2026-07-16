@@ -12,7 +12,7 @@ export default function Attendance() {
   const [summary, setSummary] = useState({ total: 0, attended: 0, percentage: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  useEffect(() => { getAttendance().then((response) => { setRecords(response.data); setSummary(response.summary); }).catch(() => setError("Unable to load attendance")) .finally(() => setLoading(false)); }, []);
+  useEffect(() => { getAttendance().then((response) => { setRecords(response.data); setSummary(response.summary); }).catch(() => setError("Unable to load attendance")).finally(() => setLoading(false)); }, []);
   const counts = useMemo(() => Object.fromEntries(["Present", "Absent", "Late", "Excused"].map((status) => [status, records.filter((record) => record.status === status).length])), [records]);
   const statusStyle: Record<string, string> = { Present: "bg-green-100 text-green-700", Absent: "bg-red-100 text-red-700", Late: "bg-amber-100 text-amber-700", Excused: "bg-blue-100 text-blue-700" };
   return <SidebarProvider defaultOpen><AppSidebar /><SidebarInset><main className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 p-3 sm:p-5 lg:p-6 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950"><PageHeader title="Attendance" subtitle="Your attendance records from the portal" />

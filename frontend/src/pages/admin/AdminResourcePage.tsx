@@ -435,12 +435,6 @@ export default function AdminResourcePage({
     }
   };
   const remove = async (record: AdminRecord) => {
-    if (
-      !window.confirm(
-        `Delete this ${config.singular.toLowerCase()}? This cannot be undone.`,
-      )
-    )
-      return;
     try {
       await deleteAdminRecord(resource, record._id);
       setNotice(`${config.singular} deleted`);

@@ -9,14 +9,14 @@ import {
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard, BookOpen, ClipboardList,
-  CalendarDays, Award, Settings, LogOut,
+  CalendarDays, Award, Settings,
 } from "lucide-react";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { logout } from "@/redux/actions/authActions";
 import { getProfile, type Profile } from "@/services/profileService";
+import SidebarAccountCard from "@/components/SidebarAccountCard";
 import getAssetURL from "@/utils/getAssetURL";
 
 const menuItems = [
@@ -43,15 +43,8 @@ export function AppSidebar() {
   }, []);
 
   const isActive = (path: string) => location.pathname === path;
-  const profileImageURL = getAssetURL(profile?.profileImage);
   const profileName = profile?.name || "Student";
-  const profileDetails = [profile?.program, profile?.semester].filter(Boolean).join(" · ") || "Student profile";
-  const profileInitials = profileName
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const profileSubtitle = [profile?.program, profile?.semester].filter(Boolean).join(" · ") || "Student profile";
   const handleLogout = () => {
     dispatch(logout());
     navigate("/", { replace: true });
@@ -147,59 +140,13 @@ export function AppSidebar() {
 
         {/* Footer — Profile */}
         <SidebarFooter className="border-t border-white/10 p-3">
-          {collapsed ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex justify-center cursor-pointer group">
-                  <Avatar className="h-10 w-10 ring-2 ring-white/25 group-hover:ring-white/50 transition-all shadow-lg">
-                    <AvatarImage src={profileImageURL} />
-                    <AvatarFallback className="bg-white/20 text-white text-sm font-black">{profileInitials}</AvatarFallback>
-                  </Avatar>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                sideOffset={10}
-                className="px-3 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-xl shadow-black/15 animate-in fade-in-0 zoom-in-95"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Avatar className="h-9 w-9 ring-2 ring-blue-100 dark:ring-blue-900">
-                    <AvatarImage src={profileImageURL} />
-                    <AvatarFallback className="bg-blue-100 text-blue-700 text-xs font-black">{profileInitials}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-black text-slate-900 dark:text-slate-100 text-sm">{profileName}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{profileDetails}</p>
-                    <div className="flex items-center gap-1 mt-1">
-                      <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                      <span className="text-xs text-green-500 font-semibold">Online</span>
-                    </div>
-                  </div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          ) : (
-            <div className="flex items-center gap-3 px-2.5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/15 transition-all duration-200 group border border-white/10">
-              <div className="relative flex-shrink-0">
-                <Avatar className="h-9 w-9 ring-2 ring-white/20 shadow-md">
-                  <AvatarImage src={profileImageURL} />
-                  <AvatarFallback className="bg-white/20 text-white text-xs font-black">{profileInitials}</AvatarFallback>
-                </Avatar>
-                <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-400 border-2 border-blue-700 shadow" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate leading-tight">{profileName}</p>
-                <p className="text-xs text-blue-200 mt-0.5 truncate">{profileDetails}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="text-blue-200 hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-200 flex-shrink-0 p-1.5 rounded-xl hover:bg-white/10"
-                title="Logout"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
-          )}
+          <SidebarAccountCard
+            name={profileName}
+            subtitle={profileSubtitle}
+            image={getAssetURL(profile?.profileImage)}
+            collapsed={collapsed}
+            onLogout={handleLogout}
+          />
         </SidebarFooter>
       </Sidebar>
     </TooltipProvider>
