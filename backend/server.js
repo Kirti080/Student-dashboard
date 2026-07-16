@@ -26,6 +26,7 @@ const attendanceRoutes = require("./routes/attendanceRoutes");
 const resultRoutes = require("./routes/resultRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const adminAttendanceRoutes = require("./routes/adminAttendanceRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 
@@ -64,6 +65,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/results", resultRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/admin/attendance-sessions", adminAttendanceRoutes);
 app.use("/api/admin", adminRoutes);
 app.use(notFound);
 app.use(errorHandler);
