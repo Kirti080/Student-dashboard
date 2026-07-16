@@ -12,6 +12,7 @@ import { AdminRoute, StudentRoute } from "./components/RoleRoutes";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminResourcePage from "./pages/admin/AdminResourcePage";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminAttendance from "./pages/admin/AdminAttendance";
 
 export default function App() {
   return (
@@ -80,7 +81,6 @@ export default function App() {
           "courses",
           "assignments",
           "progress",
-          "attendance",
           "results",
         ] as const
       ).map((resource) => (
@@ -94,6 +94,14 @@ export default function App() {
           }
         />
       ))}
+      <Route
+        path="/admin/attendance"
+        element={
+          <AdminRoute>
+            <AdminAttendance />
+          </AdminRoute>
+        }
+      />
       <Route
         path="/admin/settings"
         element={

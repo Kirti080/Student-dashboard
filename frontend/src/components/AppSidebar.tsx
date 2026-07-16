@@ -5,6 +5,7 @@ import {
   Sidebar, SidebarContent, SidebarFooter,
   SidebarGroup, SidebarGroupContent,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -64,13 +65,14 @@ export function AppSidebar() {
           {/* Logo */}
           <div className="px-4 py-5 border-b border-white/10">
             {collapsed ? (
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-3">
                 <div className="h-10 w-10 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center font-black text-sm shadow-lg border border-white/20 text-white">
                   SP
                 </div>
+                <SidebarTrigger className="rounded-xl border border-white/20 bg-white/15 text-white shadow-sm hover:bg-white/25 hover:text-white" />
               </div>
             ) : (
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between gap-2.5">
                 {/* <div className="h-9 w-9 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center border border-white/20 shadow-inner flex-shrink-0">
                   <Sparkles className="h-4 w-4 text-yellow-300" />
                 </div> */}
@@ -78,6 +80,7 @@ export function AppSidebar() {
                   <h1 className="text-base font-black text-white tracking-tight leading-tight">Student Portal</h1>
                   <p className="text-xs text-blue-200">Academic Dashboard</p>
                 </div>
+                <SidebarTrigger className="rounded-xl border border-white/20 bg-white/15 text-white shadow-sm hover:bg-white/25 hover:text-white" />
               </div>
             )}
           </div>

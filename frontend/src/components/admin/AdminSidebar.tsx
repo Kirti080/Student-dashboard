@@ -19,6 +19,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { logout } from "@/redux/actions/authActions";
@@ -83,17 +84,21 @@ export default function AdminSidebar() {
       <SidebarContent className="flex h-full flex-col">
         <div className="border-b border-white/10 px-4 py-5">
           {collapsed ? (
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-sm font-black text-white shadow-lg backdrop-blur">
                 AP
               </div>
+              <SidebarTrigger className="rounded-xl border border-white/20 bg-white/15 text-white shadow-sm hover:bg-white/25 hover:text-white" />
             </div>
           ) : (
-            <div>
-              <h1 className="text-base font-black leading-tight tracking-tight text-white">
-                Admin Portal
-              </h1>
-              <p className="text-xs text-blue-200">Academic Dashboard</p>
+            <div className="flex items-center justify-between gap-2.5">
+              <div>
+                <h1 className="text-base font-black leading-tight tracking-tight text-white">
+                  Admin Portal
+                </h1>
+                <p className="text-xs text-blue-200">Academic Dashboard</p>
+              </div>
+              <SidebarTrigger className="rounded-xl border border-white/20 bg-white/15 text-white shadow-sm hover:bg-white/25 hover:text-white" />
             </div>
           )}
         </div>

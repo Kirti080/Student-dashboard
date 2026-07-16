@@ -282,8 +282,6 @@ const configs: Record<AdminResource, Config> = {
         required: true,
       },
       { name: "grade", label: "Grade" },
-      { name: "published", label: "Published", type: "checkbox" },
-      { name: "remarks", label: "Remarks" },
     ],
     columns: [
       { label: "Student", value: (r) => text(relation(r, "student").name) },
@@ -386,7 +384,7 @@ export default function AdminResourcePage({
             ? "Present"
             : undefined,
       priority: "medium",
-      published: false,
+      published: resource === "results",
     });
     setOpen(true);
   };
@@ -418,7 +416,12 @@ export default function AdminResourcePage({
     setNotice("");
     setFormError("");
     try {
-      await saveAdminRecord(resource, form, editing?._id);
+      const payload =
+        resource === "results"
+          ? { ...form, published: true, remarks: undefined }
+          : form;
+
+      await saveAdminRecord(resource, payload, editing?._id);
       setOpen(false);
       setNotice(`${config.singular} saved successfully`);
       reload();
@@ -702,7 +705,9 @@ export default function AdminResourcePage({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           showCloseButton={false}
-          className="max-h-[90vh] gap-0 overflow-hidden rounded-3xl bg-white p-0 text-slate-900 shadow-2xl sm:max-w-2xl"
+          className={`max-h-[90vh] gap-0 overflow-hidden rounded-3xl bg-white p-0 text-slate-900 shadow-2xl ${
+            resource === "results" ? "sm:max-w-xl" : "sm:max-w-2xl"
+          }`}
         >
           <DialogHeader className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 p-6 text-left">
             <div className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/10" />
